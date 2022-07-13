@@ -1,21 +1,22 @@
-import {JWTGuard} from "@guards/jwt.guard";
-import {ResponseHelper, DefaultResponse} from "@helpers/response.helper";
-import CreateUserDto from "@modules/auth/dto/create-user.dto";
-import LoginDto from "@modules/auth/dto/login.dto";
-import {AuthService} from "@modules/auth/service/auth.service";
-import {Controller, Post, Req, Res, Body, UseGuards} from "@nestjs/common";
-import JwtRefreshGuard from "@guards/jwt-refresh.guard";
+import { CurrentUser } from '@decorators/current-user.decorator';
+import { JWTGuard } from '@guards/jwt.guard';
+import { ResponseHelper, DefaultResponse } from '@helpers/response.helper';
+import CreateUserDto from '@modules/auth/dto/create-user.dto';
+import LoginDto from '@modules/auth/dto/login.dto';
+import { AuthService } from '@modules/auth/service/auth.service';
+import { Controller, Post, Req, Res, Body, UseGuards } from '@nestjs/common';
+import JwtRefreshGuard from '@guards/jwt-refresh.guard';
 
-@Controller("auth")
+@Controller('auth')
 export class AuthController {
-    private controller = "auth";
+    private controller = 'auth';
 
     constructor(
         private readonly authService: AuthService
     ) {
     }
 
-    @Post("create")
+    @Post('create')
     async create(
         @Req() request,
         @Res() response,
@@ -26,14 +27,14 @@ export class AuthController {
                 DefaultResponse.OK,
                 {
                     controller: this.controller,
-                    params: request.params,
-                    headers: request.headers
+                    params    : request.params,
+                    headers   : request.headers
                 }
             )
         );
     }
 
-    @Post("login")
+    @Post('login')
     async login(
         @Req() request,
         @Res() response,
@@ -46,8 +47,8 @@ export class AuthController {
                 },
                 {
                     controller: this.controller,
-                    params: request.params,
-                    headers: request.headers
+                    params    : request.params,
+                    headers   : request.headers
                 }
             )
         );
@@ -55,34 +56,35 @@ export class AuthController {
 
     @Post('refresh')
     @UseGuards(JwtRefreshGuard)
-    async refresh(@Req() request, @Res() response) {
-        const tokens = await this.authService.loginWithUserDocument(request.user);
-        await this.authService.setCurrentRefreshTokenForUser(request.user._id, tokens.refreshToken)
+    async refresh(@Req() request, @Res() response, @CurrentUser() currentUser) {
+        const tokens = await this.authService.loginWithUserDocument(currentUser);
+        await this.authService.setCurrentRefreshTokenForUser(request.user._id, tokens.refreshToken);
         response.json(ResponseHelper.set(
             {
                 tokens: tokens
             },
             {
                 controller: this.controller,
-                params: request.params,
-                headers: request.headers
+                params    : request.params,
+                headers   : request.headers
             }));
     }
 
 
-    @Post("logout")
+    @Post('logout')
     @UseGuards(JWTGuard)
     async logout(
         @Req() request,
-        @Res() response
+        @Res() response,
+        @CurrentUser() currentUser
     ) {
-        await this.authService.logout(request.user);
+        await this.authService.logout(currentUser);
         response.json(ResponseHelper.set(
                 DefaultResponse.OK,
                 {
                     controller: this.controller,
-                    params: request.params,
-                    headers: request.headers
+                    params    : request.params,
+                    headers   : request.headers
                 }
             )
         );
