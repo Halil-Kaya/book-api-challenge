@@ -5,7 +5,9 @@ import productionConfiguration from "@source/config/production.config";
 import {BaseError} from "@errors/base.error";
 import {ErrorStatus} from "@errors/error.status";
 import {ErrorMessage} from "@errors/error.message";
-import {ConfigModule} from "@nestjs/config";
+import {ConfigModule, ConfigService} from "@nestjs/config";
+import {MongooseModule} from "@nestjs/mongoose";
+import {Environment} from "@source/config/environment";
 
 const ENV = process.env.MODE;
 const configurationFile = (() => {
@@ -22,12 +24,25 @@ const configurationFile = (() => {
   }
 })();
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({
       load    : [ configurationFile ],
       isGlobal: true
+    }),
+    MongooseModule.forRootAsync({
+      imports   : [ ConfigModule ],
+      useFactory: (configService: ConfigService<Environment>) => ({
+        uri               : configService.get<string>("MONGO_CONNECTION_STRING"),
+        useCreateIndex    : true,
+        useUnifiedTopology: true,
+        useNewUrlParser   : true,
+        useFindAndModify  : false,
+        connectionFactory : (connection) => {
+          return connection;
+        }
+      }),
+      inject    : [ ConfigService ]
     }),
   ],
   controllers: [],
