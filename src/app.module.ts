@@ -1,4 +1,4 @@
-import {Module} from '@nestjs/common';
+import {MiddlewareConsumer, Module, NestModule} from '@nestjs/common';
 import {AppMode} from "@source/config/app.mode";
 import developmentConfiguration from "@source/config/development.config";
 import productionConfiguration from "@source/config/production.config";
@@ -12,6 +12,7 @@ import {AuthModule} from "@modules/auth/auth.module";
 import {UserModule} from "@modules/user/user.module";
 import {APP_FILTER} from "@nestjs/core";
 import {AllExceptionsFilter} from "@source/app/core/filters/all-exceptions.filter";
+import {LoggerMiddleware} from "@middlewares/logger.middleware";
 
 const ENV = process.env.MODE;
 const configurationFile = (() => {
@@ -59,5 +60,10 @@ const configurationFile = (() => {
         }
     ],
 })
-export class AppModule {
+export class AppModule implements NestModule {
+    configure(consumer: MiddlewareConsumer): void {
+        consumer
+            .apply(LoggerMiddleware)
+            .forRoutes('*');
+    }
 }
