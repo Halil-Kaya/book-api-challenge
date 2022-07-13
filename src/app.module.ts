@@ -10,6 +10,8 @@ import {MongooseModule} from "@nestjs/mongoose";
 import {Environment} from "@source/config/environment";
 import {AuthModule} from "@modules/auth/auth.module";
 import {UserModule} from "@modules/user/user.module";
+import {APP_FILTER} from "@nestjs/core";
+import {AllExceptionsFilter} from "@source/app/core/filters/all-exceptions.filter";
 
 const ENV = process.env.MODE;
 const configurationFile = (() => {
@@ -50,6 +52,12 @@ const configurationFile = (() => {
         UserModule
     ],
     controllers: [],
+    providers: [
+        {
+            provide: APP_FILTER,
+            useClass: AllExceptionsFilter,
+        }
+    ],
 })
 export class AppModule {
 }
