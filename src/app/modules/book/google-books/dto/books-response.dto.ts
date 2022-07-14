@@ -1,4 +1,4 @@
-import { BookResponseDto } from '@modules/utils/google-books/dto/book-response.dto';
+import { BookResponseDto } from '@modules/book/google-books/dto/book-response.dto';
 
 export class BooksResponseDto {
     kind: string;

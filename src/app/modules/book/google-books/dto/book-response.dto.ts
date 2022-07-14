@@ -5,6 +5,7 @@ export class BookResponseDto {
         subtitle: string;
         authors: string[];
         publishedDate: string;
+        publisher: string;
         categories: string[];
         imageLinks: {
             smallThumbnail: string;

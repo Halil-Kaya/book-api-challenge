@@ -1,5 +1,4 @@
-import { BookmarkModule } from '@modules/bookmark/bookmark.module';
-import { GoogleBooksModule } from '@modules/utils/google-books/google-books.module';
+import { BookModule } from '@modules/book/book.module';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppMode } from '@source/config/app.mode';
@@ -46,7 +45,7 @@ const configurationFile = (() => {
                 username         : configService.get('MYSQL').USERNAME,
                 password         : configService.get('MYSQL').PASSWORD,
                 database         : configService.get('MYSQL').DATABASE,
-                entities         : ['dist/**/*.entity{.ts,.js}'],
+                entities         : [ 'dist/**/*.entity{.ts,.js}' ],
                 synchronize      : configService.get('MYSQL').SYNCHRONIZE,
                 connectionFactory: (connection) => {
                     return connection;
@@ -56,8 +55,7 @@ const configurationFile = (() => {
         }),
         AuthModule,
         UserModule,
-        GoogleBooksModule,
-        BookmarkModule
+        BookModule
     ],
     controllers: [],
     providers  : [

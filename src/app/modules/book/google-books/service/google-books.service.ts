@@ -1,7 +1,8 @@
 import { BaseError } from '@errors/base.error';
 import { ErrorMessage } from '@errors/error.message';
 import { ErrorStatus } from '@errors/error.status';
-import { BooksResponseDto } from '@modules/utils/google-books/dto/books-response.dto';
+import { BooksResponseDto } from '@modules/book/google-books/dto/books-response.dto';
+import { RedisCacheService } from '@modules/utils/redis-cache/service/redis-cache.service';
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -13,6 +14,7 @@ export class GoogleBooksService {
 
     constructor(
         private readonly httpService: HttpService,
+        private readonly redisCacheService: RedisCacheService,
         private readonly configService: ConfigService<Environment>
     ) {}
 
@@ -20,7 +22,8 @@ export class GoogleBooksService {
         try {
             const response = await this.httpService.get(this.configService.get('GOOGLE_BOOKS_API').BASE_URL, {
                 params: {
-                    q: keyword
+                    q         : keyword,
+                    maxResults: 20
                 }
             }).toPromise();
             return response.data;

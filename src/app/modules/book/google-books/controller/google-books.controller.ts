@@ -1,7 +1,7 @@
-import { GoogleBooksService } from '@modules/utils/google-books/service/google-books.service';
+import { GoogleBooksService } from '@modules/book/google-books/service/google-books.service';
 import { Controller, Post, Req, Res, Body, UseGuards, Get } from '@nestjs/common';
 
-@Controller('google-books')
+@Controller('google-book')
 export class GoogleBooksController {
 
     constructor(
