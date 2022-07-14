@@ -7,8 +7,8 @@ export class BookResponseDto {
         publishedDate: string;
         categories: string[];
         imageLinks: {
-            'smallThumbnail': 'http://books.google.com/books/content?id=1jGAAAAACAAJ&printsec=frontcover&img=1&zoom=5&source=gbs_api',
-            'thumbnail': 'http://books.google.com/books/content?id=1jGAAAAACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api'
+            smallThumbnail: string;
+            thumbnail: string;
         },
         language: string;
         previewLink: string;
