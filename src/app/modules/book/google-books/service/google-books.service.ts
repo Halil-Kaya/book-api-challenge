@@ -10,7 +10,9 @@ import { RedisCacheService } from '@modules/utils/redis-cache/service/redis-cach
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { OnEvent, EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
+import { EventEnums } from '@source/app/core/enums/event.enums';
 import { Environment } from '@source/config/environment';
 import { Repository } from 'typeorm';
 
@@ -22,6 +24,7 @@ export class GoogleBooksService {
         @InjectRepository(Bookmark) private bookmarkRepository: Repository<Bookmark>,
         private readonly httpService: HttpService,
         private readonly redisCacheService: RedisCacheService,
+        private readonly eventEmitter: EventEmitter2,
         private readonly configService: ConfigService<Environment>
     ) {}
 
@@ -35,11 +38,10 @@ export class GoogleBooksService {
                 }
             }).toPromise();
             const booksResponseDto = response.data as BooksResponseDto;
-            //Todo : kullanicinin bunu beklemesine gerek yok bunu event olarak ekle
-            await this.setToCacheBooks(booksResponseDto.items);
+            this.eventEmitter.emit(EventEnums.SAVE_TO_REDIS_EVENT, booksResponseDto.items);
             return booksResponseDto;
         } catch(err) {
-            this.logger.error(err, 'GoogleBooksService:getBooks');
+            this.logger.error(err, 'getBooks');
             throw new BaseError(ErrorStatus.BAD_REQUEST, ErrorMessage.UNEXPECTED);
         }
     }
@@ -48,19 +50,23 @@ export class GoogleBooksService {
         try {
             const response = await this.httpService.get(this.configService.get('GOOGLE_BOOKS_API').BASE_URL + '/' + bookId).toPromise();
             const bookResponseDto = response.data as BookResponseDto;
-            //Todo : kullanicinin bunu beklemesine gerek yok bunu event olarak ekle
-            await this.setToCacheBooks([ bookResponseDto ]);
+            this.eventEmitter.emit(EventEnums.SAVE_TO_REDIS_EVENT, [ bookResponseDto ]);
             return bookResponseDto;
         } catch(err) {
-            this.logger.error(err, 'GoogleBooksService:getBook');
+            this.logger.error(err, 'getBook');
             throw new BaseError(ErrorStatus.BAD_REQUEST, ErrorMessage.UNEXPECTED);
         }
     }
 
+    @OnEvent(EventEnums.SAVE_TO_REDIS_EVENT, { async: true })
     private async setToCacheBooks(bookResponseDtos: BookResponseDto[]): Promise<void> {
-        for (const bookResponseDto of bookResponseDtos) {
-            const bookmark = this.convertBookResponseToBookMarkObject(bookResponseDto);
-            await this.setToCacheBook(bookmark);
+        try {
+            for (const bookResponseDto of bookResponseDtos) {
+                const bookmark = this.convertBookResponseToBookMarkObject(bookResponseDto);
+                await this.setToCacheBook(bookmark);
+            }
+        } catch(err) {
+            this.logger.error(err, 'setToCacheBooks');
         }
     }
 

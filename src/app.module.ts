@@ -1,5 +1,6 @@
 import { BookModule } from '@modules/book/book.module';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppMode } from '@source/config/app.mode';
 import developmentConfiguration from '@source/config/development.config';
@@ -39,20 +40,18 @@ const configurationFile = (() => {
         TypeOrmModule.forRootAsync({
             imports   : [ ConfigModule ],
             useFactory: (configService: ConfigService<Environment>) => ({
-                type             : configService.get('MYSQL').TYPE,
-                host             : configService.get('MYSQL').HOST,
-                port             : configService.get('MYSQL').PORT,
-                username         : configService.get('MYSQL').USERNAME,
-                password         : configService.get('MYSQL').PASSWORD,
-                database         : configService.get('MYSQL').DATABASE,
-                entities         : [ 'dist/**/*.entity{.ts,.js}' ],
-                synchronize      : configService.get('MYSQL').SYNCHRONIZE,
-                connectionFactory: (connection) => {
-                    return connection;
-                }
+                type       : configService.get('MYSQL').TYPE,
+                host       : configService.get('MYSQL').HOST,
+                port       : configService.get('MYSQL').PORT,
+                username   : configService.get('MYSQL').USERNAME,
+                password   : configService.get('MYSQL').PASSWORD,
+                database   : configService.get('MYSQL').DATABASE,
+                entities   : [ 'dist/**/*.entity{.ts,.js}' ],
+                synchronize: configService.get('MYSQL').SYNCHRONIZE
             }),
             inject    : [ ConfigService ]
         }),
+        EventEmitterModule.forRoot(),
         AuthModule,
         UserModule,
         BookModule

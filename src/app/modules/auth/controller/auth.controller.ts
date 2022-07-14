@@ -20,8 +20,7 @@ export class AuthController {
     async create(
         @Req() request,
         @Res() response,
-        @Body() createUserDto: CreateUserDto
-    ) {
+        @Body() createUserDto: CreateUserDto) {
         await this.authService.createUser(createUserDto);
         response.json(ResponseHelper.set(
                 DefaultResponse.OK,
@@ -38,8 +37,7 @@ export class AuthController {
     async login(
         @Req() request,
         @Res() response,
-        @Body() loginDto: LoginDto
-    ) {
+        @Body() loginDto: LoginDto) {
         const tokens = await this.authService.login(loginDto);
         response.json(ResponseHelper.set(
                 {
@@ -56,7 +54,9 @@ export class AuthController {
 
     @Post('refresh')
     @UseGuards(JwtRefreshGuard)
-    async refresh(@Req() request, @Res() response, @CurrentUser() currentUser) {
+    async refresh(@Req() request,
+        @Res() response,
+        @CurrentUser() currentUser) {
         const tokens = await this.authService.loginWithUserDocument(currentUser);
         await this.authService.setCurrentRefreshTokenForUser(request.user.id, tokens.refreshToken);
         response.json(ResponseHelper.set(
@@ -76,8 +76,7 @@ export class AuthController {
     async logout(
         @Req() request,
         @Res() response,
-        @CurrentUser() currentUser
-    ) {
+        @CurrentUser() currentUser) {
         await this.authService.logout(currentUser);
         response.json(ResponseHelper.set(
                 DefaultResponse.OK,
