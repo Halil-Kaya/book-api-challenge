@@ -16,15 +16,15 @@ export default () => ({
         PORT: 6380
     },
     MYSQL                    : {
-        TYPE    : 'mysql',
-        HOST    : 'localhost',
-        PORT    : 3306,
-        USERNAME: 'root',
-        PASSWORD: 'mypass123',
-        DATABASE: 'book_api',
+        TYPE       : 'mysql',
+        HOST       : 'localhost',
+        PORT       : 3306,
+        USERNAME   : 'root',
+        PASSWORD   : 'mypass123',
+        DATABASE   : 'book_api',
         SYNCHRONIZE: true
     },
-    GOOGLE_BOOKS_API: {
+    GOOGLE_BOOKS_API         : {
         BASE_URL: 'https://www.googleapis.com/books/v1/volumes'
     }
 });
