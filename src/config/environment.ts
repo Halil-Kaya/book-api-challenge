@@ -27,4 +27,7 @@ export interface Environment {
         DATABASE: string,
         SYNCHRONIZE: boolean
     };
+    GOOGLE_BOOKS_API: {
+        BASE_URL: string
+    };
 }

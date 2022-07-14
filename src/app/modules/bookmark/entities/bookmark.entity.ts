@@ -22,6 +22,24 @@ export class Bookmark {
     authors: string;
 
     @Column()
+    categories: string;
+
+    @Column()
+    previewLink: string;
+
+    @Column()
+    infoLink: string;
+
+    @Column()
+    smallThumbnail: string;
+
+    @Column()
+    thumbnail: string;
+
+    @Column()
+    canonicalVolumeLink: string;
+
+    @Column()
     publishedDate: string;
 
     @Column()

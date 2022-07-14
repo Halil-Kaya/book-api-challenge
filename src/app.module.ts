@@ -1,3 +1,5 @@
+import { BookmarkModule } from '@modules/bookmark/bookmark.module';
+import { GoogleBooksModule } from '@modules/utils/google-books/google-books.module';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppMode } from '@source/config/app.mode';
@@ -53,7 +55,9 @@ const configurationFile = (() => {
             inject    : [ ConfigService ]
         }),
         AuthModule,
-        UserModule
+        UserModule,
+        GoogleBooksModule,
+        BookmarkModule
     ],
     controllers: [],
     providers  : [

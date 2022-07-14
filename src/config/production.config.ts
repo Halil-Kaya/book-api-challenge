@@ -23,5 +23,8 @@ export default () => ({
         PASSWORD   : 'mypass123',
         DATABASE   : 'book_api',
         SYNCHRONIZE: false
+    },
+    GOOGLE_BOOKS_API         : {
+        BASE_URL: 'https://www.googleapis.com/books/v1/volumes'
     }
 });

@@ -15,7 +15,6 @@ import * as shajs from 'sha.js';
 @Injectable()
 export class AuthService {
     constructor(
-        private readonly configService: ConfigService<Environment>,
         private readonly userService: UserService,
         private readonly jwtService: JwtService,
         private readonly tokenHelper: JWTTokenHelper
@@ -71,7 +70,7 @@ export class AuthService {
     }
 
     //~~~~~Refresh token section start
-    async getUserIfRefreshTokenMatches(refreshToken: string, userId: number) {
+    public async getUserIfRefreshTokenMatches(refreshToken: string, userId: number) {
         const encryptedRefreshToken = shajs('sha256').update(refreshToken).digest('hex');
         const user = await this.userService.findById(userId);
         const isRefreshTokenMatching = await bcrypt.compare(
@@ -83,7 +82,7 @@ export class AuthService {
         }
     }
 
-    async setCurrentRefreshTokenForUser(userId: number, refreshToken: string) {
+    public async setCurrentRefreshTokenForUser(userId: number, refreshToken: string) {
         const currentHashedRefreshToken = await AuthService.hashRefreshToken(refreshToken);
         await this.userService.setRefreshTokenOfUser(userId, currentHashedRefreshToken);
     }
@@ -92,7 +91,5 @@ export class AuthService {
         const encryptedRefreshToken = shajs('sha256').update(refreshToken).digest('hex');
         return await bcrypt.hash(encryptedRefreshToken, 10);
     }
-
     //~~~~~Refresh token section end
-
 }
