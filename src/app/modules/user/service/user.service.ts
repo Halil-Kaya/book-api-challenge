@@ -1,6 +1,6 @@
 import { checkResult, CheckType } from '@helpers/check.result';
 import CreateUserDto from '@modules/auth/dto/create-user.dto';
-import { UserEntity } from '@modules/user/entities/user.entity';
+import { User } from '@modules/user/entities/user.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ErrorStatus } from '@errors/error.status';
@@ -10,7 +10,7 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class UserService {
     constructor(
-        @InjectRepository(UserEntity) private userRepository: Repository<UserEntity>
+        @InjectRepository(User) private userRepository: Repository<User>
     ) {
     }
 
@@ -20,7 +20,7 @@ export class UserService {
         });
     }
 
-    public async getUserWithPasswordByEmail(email: string): Promise<UserEntity> {
+    public async getUserWithPasswordByEmail(email: string): Promise<User> {
         return this.userRepository.findOne({
             where: {
                 email: email
@@ -28,15 +28,15 @@ export class UserService {
         });
     }
 
-    public async findById(id: number): Promise<UserEntity> {
+    public async findById(id: number): Promise<User> {
         return this.userRepository.findOneBy({ id: id });
     }
 
-    public async save(user: UserEntity): Promise<UserEntity> {
+    public async save(user: User): Promise<User> {
         return this.userRepository.save(user);
     }
 
-    public async create(createUserDto: CreateUserDto): Promise<UserEntity> {
+    public async create(createUserDto: CreateUserDto): Promise<User> {
         await this.isUserAlreadyExistIfYesThrowError(createUserDto.email);
         const newUser = this.userRepository.create(createUserDto);
         return this.userRepository.save(newUser);

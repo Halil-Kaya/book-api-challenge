@@ -4,7 +4,6 @@ export default () => ({
     MODE                     : AppMode.PRODUCTION,
     URL_ROOT                 : '/api',
     PORT                     : '3032',
-    MONGO_CONNECTION_STRING  : process.env.DB_URL,
     JWT_SECRET               : 'ACTouSkiAbuSianUmELveydRIcKSMorOphiciontLopigAnulS',
     JWT_EXPIRES              : '30d',
     JWT_ALGORITHM            : 'HS256',

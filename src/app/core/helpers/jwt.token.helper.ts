@@ -1,4 +1,4 @@
-import { UserEntity } from '@modules/user/entities/user.entity';
+import { User } from '@modules/user/entities/user.entity';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Environment } from '@source/config/environment';
@@ -41,7 +41,7 @@ export class JWTTokenHelper {
     }
 
     public signUser(
-        user: UserEntity
+        user: User
     ): SignResponse {
         return this.getTokenForUser({
             id: user.id

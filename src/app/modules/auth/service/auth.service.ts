@@ -3,7 +3,7 @@ import { ErrorStatus } from '@errors/error.status';
 import { checkResult, CheckType } from '@helpers/check.result';
 import { JWTTokenHelper, SignResponse } from '@helpers/jwt.token.helper';
 import LoginDto from '@modules/auth/dto/login.dto';
-import { UserEntity, SanitizedUser } from '@modules/user/entities/user.entity';
+import { User, SanitizedUser } from '@modules/user/entities/user.entity';
 import { UserService } from '@modules/user/service/user.service';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -23,7 +23,7 @@ export class AuthService {
     }
 
     public async login(loginDto: LoginDto): Promise<SignResponse> {
-        const user: UserEntity = await this.checkAuthAndGetUser(loginDto);
+        const user: User = await this.checkAuthAndGetUser(loginDto);
         const tokens: SignResponse = this.tokenHelper.signUser(user);
         user.isLoggin = true;
         user.currentHashedRefreshToken = await AuthService.hashRefreshToken(tokens.refreshToken);
@@ -31,7 +31,7 @@ export class AuthService {
         return tokens;
     }
 
-    public async loginWithUserDocument(user: UserEntity): Promise<SignResponse> {
+    public async loginWithUserDocument(user: User): Promise<SignResponse> {
         const tokens: SignResponse = this.tokenHelper.signUser(user);
         user.isLoggin = true;
         user.currentHashedRefreshToken = await AuthService.hashRefreshToken(tokens.refreshToken);
@@ -39,7 +39,7 @@ export class AuthService {
         return tokens;
     }
 
-    public async logout(user: UserEntity): Promise<void> {
+    public async logout(user: User): Promise<void> {
         user.isLoggin = false;
         user.currentHashedRefreshToken = '';
         await this.userService.save(user);
@@ -47,7 +47,7 @@ export class AuthService {
 
     public async createUser(createUserDto): Promise<void> {
         createUserDto.password = await bcrypt.hash(createUserDto.password, 12);
-        const createdUser: UserEntity = await this.userService.create(createUserDto);
+        const createdUser: User = await this.userService.create(createUserDto);
         checkResult(createdUser,
             CheckType.IS_NULL_OR_UNDEFINED,
             ErrorStatus.BAD_REQUEST,
@@ -58,8 +58,8 @@ export class AuthService {
         return this.userService.findById(sanitizedUser.id);
     }
 
-    private async checkAuthAndGetUser(loginDto: LoginDto): Promise<UserEntity> {
-        const user: UserEntity = await this.userService.getUserWithPasswordByEmail(loginDto.email);
+    private async checkAuthAndGetUser(loginDto: LoginDto): Promise<User> {
+        const user: User = await this.userService.getUserWithPasswordByEmail(loginDto.email);
         checkResult(user, CheckType.IS_NULL_OR_UNDEFINED, ErrorStatus.BAD_REQUEST, ErrorMessage.INVALID_CREDENTIALS);
         const isPasswordMatch: boolean = await AuthService.checkPasswordMatch(loginDto.password, user.password);
         checkResult(isPasswordMatch, CheckType.IS_FALSE, ErrorStatus.BAD_REQUEST, ErrorMessage.INVALID_CREDENTIALS);

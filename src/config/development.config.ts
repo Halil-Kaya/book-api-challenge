@@ -4,7 +4,6 @@ export default () => ({
     MODE                     : AppMode.DEVELOPMENT,
     URL_ROOT                 : '/api',
     PORT                     : '3031',
-    MONGO_CONNECTION_STRING  : 'mongodb://localhost:27017/book_app',
     JWT_SECRET               : 'ACTouSkiAbuSianUmELveydRIcKSMorOphiciontLopigAnulS',
     JWT_EXPIRES              : '30d',
     JWT_ALGORITHM            : 'HS256',
