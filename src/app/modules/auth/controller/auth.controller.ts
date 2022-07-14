@@ -58,7 +58,7 @@ export class AuthController {
     @UseGuards(JwtRefreshGuard)
     async refresh(@Req() request, @Res() response, @CurrentUser() currentUser) {
         const tokens = await this.authService.loginWithUserDocument(currentUser);
-        await this.authService.setCurrentRefreshTokenForUser(request.user._id, tokens.refreshToken);
+        await this.authService.setCurrentRefreshTokenForUser(request.user.id, tokens.refreshToken);
         response.json(ResponseHelper.set(
             {
                 tokens: tokens

@@ -1,8 +1,8 @@
-import {UserDocument} from "@modules/user/model/user";
-import {Injectable} from '@nestjs/common';
-import {ConfigService} from '@nestjs/config';
-import {Environment} from '@source/config/environment';
-import {JwtService, JwtSignOptions} from '@nestjs/jwt';
+import { UserEntity } from '@modules/user/entities/user.entity';
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { Environment } from '@source/config/environment';
+import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 
 export interface SignResponse {
     accessToken: string;
@@ -19,12 +19,12 @@ export class JWTTokenHelper {
         private readonly jwtService: JwtService,
     ) {
         this.jwtOptions = {
-            secret: configService.get<string>('JWT_SECRET'),
+            secret   : configService.get<string>('JWT_SECRET'),
             expiresIn: configService.get<string>('JWT_EXPIRES'),
             algorithm: configService.get('JWT_ALGORITHM')
         };
         this.jwtRefreshTokenOptions = {
-            secret: configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
+            secret   : configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
             expiresIn: configService.get<string>('JWT_REFRESH_TOKEN_EXPIRES'),
             algorithm: configService.get('JWT_REFRESH_ALGORITHM')
         };
@@ -33,18 +33,18 @@ export class JWTTokenHelper {
     private getTokenForUser(payload: any): SignResponse {
         const accessToken = this.jwtService.sign(payload, this.jwtOptions);
         const refreshToken = this.jwtService
-            .sign(payload, this.jwtRefreshTokenOptions)
+            .sign(payload, this.jwtRefreshTokenOptions);
         return {
-            accessToken: accessToken,
+            accessToken : accessToken,
             refreshToken: refreshToken
         };
     }
 
     public signUser(
-        user: UserDocument
+        user: UserEntity
     ): SignResponse {
         return this.getTokenForUser({
-            _id: user._id
+            id: user.id
         });
     }
 }

@@ -1,17 +1,16 @@
-import {ErrorMessage} from "@errors/error.message";
-import {ErrorStatus} from "@errors/error.status";
-import {checkResult, CheckType} from "@helpers/check.result";
-import {JWTTokenHelper, SignResponse} from "@helpers/jwt.token.helper";
-import LoginDto from "@modules/auth/dto/login.dto";
-import {UserDocument, SanitizedUser} from "@modules/user/model/user";
-import {UserService} from "@modules/user/service/user.service";
-import {Injectable} from "@nestjs/common";
-import {ConfigService} from "@nestjs/config";
-import {JwtService} from "@nestjs/jwt";
-import {Environment} from "@source/config/environment";
-import * as bcrypt from "bcrypt";
+import { ErrorMessage } from '@errors/error.message';
+import { ErrorStatus } from '@errors/error.status';
+import { checkResult, CheckType } from '@helpers/check.result';
+import { JWTTokenHelper, SignResponse } from '@helpers/jwt.token.helper';
+import LoginDto from '@modules/auth/dto/login.dto';
+import { UserEntity, SanitizedUser } from '@modules/user/entities/user.entity';
+import { UserService } from '@modules/user/service/user.service';
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { Environment } from '@source/config/environment';
+import * as bcrypt from 'bcrypt';
 import * as shajs from 'sha.js';
-import {Types} from "mongoose";
 
 @Injectable()
 export class AuthService {
@@ -24,31 +23,31 @@ export class AuthService {
     }
 
     public async login(loginDto: LoginDto): Promise<SignResponse> {
-        const user: UserDocument = await this.checkAuthAndGetUser(loginDto);
-        const tokens: SignResponse = this.tokenHelper.signUser(user._id);
+        const user: UserEntity = await this.checkAuthAndGetUser(loginDto);
+        const tokens: SignResponse = this.tokenHelper.signUser(user);
         user.isLoggin = true;
-        user.currentHashedRefreshToken = await AuthService.hashRefreshToken(tokens.refreshToken)
-        await user.save();
+        user.currentHashedRefreshToken = await AuthService.hashRefreshToken(tokens.refreshToken);
+        await this.userService.save(user);
         return tokens;
     }
 
-    public async loginWithUserDocument(user: UserDocument): Promise<SignResponse> {
-        const tokens: SignResponse = this.tokenHelper.signUser(user._id);
+    public async loginWithUserDocument(user: UserEntity): Promise<SignResponse> {
+        const tokens: SignResponse = this.tokenHelper.signUser(user);
         user.isLoggin = true;
-        user.currentHashedRefreshToken = await AuthService.hashRefreshToken(tokens.refreshToken)
-        await user.save();
+        user.currentHashedRefreshToken = await AuthService.hashRefreshToken(tokens.refreshToken);
+        await this.userService.save(user);
         return tokens;
     }
 
-    public async logout(userDocument: UserDocument): Promise<void> {
-        userDocument.isLoggin = false;
-        userDocument.currentHashedRefreshToken = '';
-        await userDocument.save();
+    public async logout(user: UserEntity): Promise<void> {
+        user.isLoggin = false;
+        user.currentHashedRefreshToken = '';
+        await this.userService.save(user);
     }
 
     public async createUser(createUserDto): Promise<void> {
         createUserDto.password = await bcrypt.hash(createUserDto.password, 12);
-        const createdUser: UserDocument = await this.userService.create(createUserDto);
+        const createdUser: UserEntity = await this.userService.create(createUserDto);
         checkResult(createdUser,
             CheckType.IS_NULL_OR_UNDEFINED,
             ErrorStatus.BAD_REQUEST,
@@ -56,11 +55,11 @@ export class AuthService {
     }
 
     public async findUserFromSanitizedUser(sanitizedUser: SanitizedUser) {
-        return this.userService.findById(sanitizedUser._id);
+        return this.userService.findById(sanitizedUser.id);
     }
 
-    private async checkAuthAndGetUser(loginDto: LoginDto): Promise<UserDocument> {
-        const user: UserDocument = await this.userService.getUserWithPasswordByEmail(loginDto.email);
+    private async checkAuthAndGetUser(loginDto: LoginDto): Promise<UserEntity> {
+        const user: UserEntity = await this.userService.getUserWithPasswordByEmail(loginDto.email);
         checkResult(user, CheckType.IS_NULL_OR_UNDEFINED, ErrorStatus.BAD_REQUEST, ErrorMessage.INVALID_CREDENTIALS);
         const isPasswordMatch: boolean = await AuthService.checkPasswordMatch(loginDto.password, user.password);
         checkResult(isPasswordMatch, CheckType.IS_FALSE, ErrorStatus.BAD_REQUEST, ErrorMessage.INVALID_CREDENTIALS);
@@ -72,7 +71,7 @@ export class AuthService {
     }
 
     //~~~~~Refresh token section start
-    async getUserIfRefreshTokenMatches(refreshToken: string, userId: string) {
+    async getUserIfRefreshTokenMatches(refreshToken: string, userId: number) {
         const encryptedRefreshToken = shajs('sha256').update(refreshToken).digest('hex');
         const user = await this.userService.findById(userId);
         const isRefreshTokenMatching = await bcrypt.compare(
@@ -84,15 +83,16 @@ export class AuthService {
         }
     }
 
-    async setCurrentRefreshTokenForUser( userId: Types.ObjectId,refreshToken: string) {
-        const currentHashedRefreshToken = await AuthService.hashRefreshToken(refreshToken)
-        await this.userService.setRefreshTokenOfUser(userId, currentHashedRefreshToken)
+    async setCurrentRefreshTokenForUser(userId: number, refreshToken: string) {
+        const currentHashedRefreshToken = await AuthService.hashRefreshToken(refreshToken);
+        await this.userService.setRefreshTokenOfUser(userId, currentHashedRefreshToken);
     }
 
-    private static async hashRefreshToken(refreshToken : string) : Promise<string>{
+    private static async hashRefreshToken(refreshToken: string): Promise<string> {
         const encryptedRefreshToken = shajs('sha256').update(refreshToken).digest('hex');
         return await bcrypt.hash(encryptedRefreshToken, 10);
     }
+
     //~~~~~Refresh token section end
 
 }

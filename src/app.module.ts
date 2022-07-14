@@ -1,22 +1,22 @@
-import {MiddlewareConsumer, Module, NestModule} from '@nestjs/common';
-import {AppMode} from "@source/config/app.mode";
-import developmentConfiguration from "@source/config/development.config";
-import productionConfiguration from "@source/config/production.config";
-import {BaseError} from "@errors/base.error";
-import {ErrorStatus} from "@errors/error.status";
-import {ErrorMessage} from "@errors/error.message";
-import {ConfigModule, ConfigService} from "@nestjs/config";
-import {MongooseModule} from "@nestjs/mongoose";
-import {Environment} from "@source/config/environment";
-import {AuthModule} from "@modules/auth/auth.module";
-import {UserModule} from "@modules/user/user.module";
-import {APP_FILTER} from "@nestjs/core";
-import {AllExceptionsFilter} from "@source/app/core/filters/all-exceptions.filter";
-import {LoggerMiddleware} from "@middlewares/logger.middleware";
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AppMode } from '@source/config/app.mode';
+import developmentConfiguration from '@source/config/development.config';
+import productionConfiguration from '@source/config/production.config';
+import { BaseError } from '@errors/base.error';
+import { ErrorStatus } from '@errors/error.status';
+import { ErrorMessage } from '@errors/error.message';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Environment } from '@source/config/environment';
+import { AuthModule } from '@modules/auth/auth.module';
+import { UserModule } from '@modules/user/user.module';
+import { APP_FILTER } from '@nestjs/core';
+import { AllExceptionsFilter } from '@source/app/core/filters/all-exceptions.filter';
+import { LoggerMiddleware } from '@middlewares/logger.middleware';
 
 const ENV = process.env.MODE;
 const configurationFile = (() => {
-    switch (ENV) {
+    switch(ENV) {
         case AppMode.DEVELOPMENT:
             return developmentConfiguration;
         case AppMode.PRODUCTION:
@@ -30,32 +30,35 @@ const configurationFile = (() => {
 })();
 
 @Module({
-    imports: [
+    imports    : [
         ConfigModule.forRoot({
-            load: [configurationFile],
+            load    : [ configurationFile ],
             isGlobal: true
         }),
-        MongooseModule.forRootAsync({
-            imports: [ConfigModule],
+        TypeOrmModule.forRootAsync({
+            imports   : [ ConfigModule ],
             useFactory: (configService: ConfigService<Environment>) => ({
-                uri: configService.get<string>("MONGO_CONNECTION_STRING"),
-                useCreateIndex: true,
-                useUnifiedTopology: true,
-                useNewUrlParser: true,
-                useFindAndModify: false,
+                type             : configService.get('MYSQL').TYPE,
+                host             : configService.get('MYSQL').HOST,
+                port             : configService.get('MYSQL').PORT,
+                username         : configService.get('MYSQL').USERNAME,
+                password         : configService.get('MYSQL').PASSWORD,
+                database         : configService.get('MYSQL').DATABASE,
+                entities         : ['dist/**/*.entity{.ts,.js}'],
+                synchronize      : configService.get('MYSQL').SYNCHRONIZE,
                 connectionFactory: (connection) => {
                     return connection;
                 }
             }),
-            inject: [ConfigService]
+            inject    : [ ConfigService ]
         }),
         AuthModule,
         UserModule
     ],
     controllers: [],
-    providers: [
+    providers  : [
         {
-            provide: APP_FILTER,
+            provide : APP_FILTER,
             useClass: AllExceptionsFilter,
         }
     ],

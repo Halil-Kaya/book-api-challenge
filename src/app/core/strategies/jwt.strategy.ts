@@ -2,7 +2,7 @@ import { BaseError } from "@errors/base.error";
 import { ErrorMessage } from "@errors/error.message";
 import { ErrorStatus } from "@errors/error.status";
 import { AuthService } from "@modules/auth/service/auth.service";
-import { SanitizedUser } from "@modules/user/model/user";
+import { SanitizedUser } from "@modules/user/entities/user.entity";
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
