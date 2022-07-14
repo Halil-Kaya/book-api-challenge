@@ -1,3 +1,4 @@
+import { Pagination } from '@decorators/pagination.decorator';
 import { BaseError } from '@errors/base.error';
 import { ErrorMessage } from '@errors/error.message';
 import { ErrorStatus } from '@errors/error.status';
@@ -24,12 +25,13 @@ export class GoogleBooksService {
         private readonly configService: ConfigService<Environment>
     ) {}
 
-    async getBooks(keyword: string): Promise<BooksResponseDto> {
+    async getBooks(keywords: string, pagination: Pagination): Promise<BooksResponseDto> {
         try {
             const response = await this.httpService.get(this.configService.get('GOOGLE_BOOKS_API').BASE_URL, {
                 params: {
-                    q         : keyword,
-                    maxResults: 20
+                    q         : keywords,
+                    maxResults: pagination.limit,
+                    startIndex: pagination.page
                 }
             }).toPromise();
             const booksResponseDto = response.data as BooksResponseDto;
@@ -48,6 +50,7 @@ export class GoogleBooksService {
             const bookResponseDto = response.data as BookResponseDto;
             //Todo : kullanicinin bunu beklemesine gerek yok bunu event olarak ekle
             await this.setToCacheBooks([ bookResponseDto ]);
+            return bookResponseDto;
         } catch(err) {
             this.logger.error(err, 'GoogleBooksService:getBook');
             throw new BaseError(ErrorStatus.BAD_REQUEST, ErrorMessage.UNEXPECTED);
