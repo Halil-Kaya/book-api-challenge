@@ -1,7 +1,7 @@
 # Book api Challange
 
-> Hey merhaba ✋ bir challange olarak yaptigim bu projede amaç Google Books api'den gelen kitapları listelemek, kendi
-> bookmark listenize eklemek,listelemek ve silmek
+> Hey merhaba ✋ bir challange olarak yaptigim bu projede amacım Google Books api kullanarak bu api'den gelen kitapları
+> kullanıcıya bookmark olarak eklemek.
 
 # Postman Linki
 
@@ -74,7 +74,7 @@ $ npm run start:dev
 ### Projeyi ayağa kaldırma
 
 ```bash
-#http://localhost:3031
+#http://localhost:3032
 $ docker-compose up
 ```
 
