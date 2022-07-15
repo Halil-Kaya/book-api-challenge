@@ -4,8 +4,10 @@ import { ResponseHelper, DefaultResponse } from '@helpers/response.helper';
 import CreateUserDto from '@modules/auth/dto/create-user.dto';
 import LoginDto from '@modules/auth/dto/login.dto';
 import { AuthService } from '@modules/auth/service/auth.service';
-import { Controller, Post, Req, Res, Body, UseGuards } from '@nestjs/common';
+import { User } from '@modules/user/entities/user.entity';
+import { Controller, Post, Req, Res, Body, UseGuards, Get } from '@nestjs/common';
 import JwtRefreshGuard from '@guards/jwt-refresh.guard';
+import * as $$ from 'lodash';
 
 @Controller('auth')
 export class AuthController {
@@ -15,6 +17,24 @@ export class AuthController {
         private readonly authService: AuthService
     ) {
     }
+
+    @Get('me')
+    @UseGuards(JWTGuard)
+    async getMe(
+        @Req() request,
+        @Res() response,
+        @CurrentUser() currentUser: User) {
+        response.json(ResponseHelper.set(
+                $$.pick(currentUser, [ 'id', 'email' ]),
+                {
+                    controller: this.controller,
+                    params    : request.params,
+                    headers   : request.headers
+                }
+            )
+        );
+    }
+
 
     @Post('create')
     async create(

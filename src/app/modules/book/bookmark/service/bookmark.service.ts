@@ -75,7 +75,6 @@ export class BookmarkService {
         pagination.totalItemCount = await this.bookmarkRepository.countBy(query);
         pagination.offset = pagination?.offset ? pagination.offset : 0;
         pagination.count = pagination.totalItemCount == pagination.limit ? 0 : Math.abs(Math.floor(pagination.totalItemCount / pagination.limit - 1));
-        console.log('pagination-> ', pagination);
         pagination.hasNext = pagination.count > pagination.current;
         pagination.hasPrev = pagination.current > 0;
         return pagination.totalItemCount;
