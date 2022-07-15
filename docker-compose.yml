@@ -1,0 +1,54 @@
+version: "3.5"
+services:
+  books_api:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "3032:3032"
+    depends_on:
+      - mysql_service
+      - redis_service
+    environment:
+      - REDIS_URL=redis://redis_service
+      - MYSQL_HOST=mysql_service
+      - MYSQL_USERNAME=root,
+      - MYSQL_PASSWORD=root,
+      - MYSQL_DATABASE=book_api,
+      - MYSQL_SYNCHRONIZE=true
+    networks:
+      - books_api_net
+
+  mysql_service:
+    image: mysql:8.0.1
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=book_api
+    networks:
+      - books_api_net
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    links:
+      - mysql_service:db
+    ports:
+      - 8081:80
+    environment:
+      MYSQL_USERNAME: root
+      MYSQL_ROOT_PASSWORD: root
+      PMA_HOST: db
+    networks:
+      - books_api_net
+
+  redis_service:
+    image: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - books_api_net
+
+networks:
+  books_api_net:
+    driver: bridge

@@ -48,7 +48,6 @@ const configurationFile = (() => {
             useFactory: (configService: ConfigService<Environment>) => ({
                 type       : configService.get('MYSQL').TYPE,
                 host       : configService.get('MYSQL').HOST,
-                port       : configService.get('MYSQL').PORT,
                 username   : configService.get('MYSQL').USERNAME,
                 password   : configService.get('MYSQL').PASSWORD,
                 database   : configService.get('MYSQL').DATABASE,

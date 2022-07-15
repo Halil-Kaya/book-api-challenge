@@ -11,14 +11,11 @@ export default () => ({
     JWT_REFRESH_TOKEN_EXPIRES: '3600d',
     JWT_REFRESH_ALGORITHM    : 'HS256',
     REDIS                    : {
-        URL : 'redis://localhost:6379',
-        HOST: 'localhost',
-        PORT: 6380
+        URL: 'redis://localhost:6379'
     },
     MYSQL                    : {
         TYPE       : 'mysql',
         HOST       : 'localhost',
-        PORT       : 3306,
         USERNAME   : 'root',
         PASSWORD   : 'mypass123',
         DATABASE   : 'book_api',

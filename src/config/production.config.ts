@@ -3,7 +3,7 @@ import { AppMode } from '@source/config/app.mode';
 export default () => ({
     MODE                     : AppMode.PRODUCTION,
     URL_ROOT                 : '/api',
-    PORT                     : '3032',
+    PORT                     : process.env.PORT,
     JWT_SECRET               : 'ACTouSkiAbuSianUmELveydRIcKSMorOphiciontLopigAnulS',
     JWT_EXPIRES              : '30d',
     JWT_ALGORITHM            : 'HS256',
@@ -11,18 +11,15 @@ export default () => ({
     JWT_REFRESH_TOKEN_EXPIRES: '3600d',
     JWT_REFRESH_ALGORITHM    : 'HS256',
     REDIS                    : {
-        URL : process.env.REDIS_URL,
-        HOST: process.env.REDIS_HOST,
-        PORT: process.env.REDIS_PORT
+        URL: process.env.REDIS_URL,
     },
     MYSQL                    : {
         TYPE       : 'mysql',
-        HOST       : 'localhost',
-        PORT       : 3306,
-        USERNAME   : 'root',
-        PASSWORD   : 'mypass123',
-        DATABASE   : 'book_api',
-        SYNCHRONIZE: false
+        HOST       : process.env.MYSQL_HOST,
+        USERNAME   : process.env.MYSQL_USERNAME,
+        PASSWORD   : process.env.MYSQL_PASSWORD,
+        DATABASE   : process.env.MYSQL_DATABASE,
+        SYNCHRONIZE: process.env.MYSQL_SYNCHRONIZE
     },
     GOOGLE_BOOKS_API         : {
         BASE_URL: 'https://www.googleapis.com/books/v1/volumes'
