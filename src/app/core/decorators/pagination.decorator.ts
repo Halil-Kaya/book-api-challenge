@@ -34,13 +34,13 @@ export const Paginate = createParamDecorator(
             : request.query.limit
                 ? parseInt(request.query.limit)
                 : undefined;
-
         return {
-            offset: page * limit < 0 ? 0 : page * limit,
-            limit : limit < 0 || limit > 40 ? 40 : limit,
-            page  : page,
-            next  : page + 1,
-            prev  : page - 1 >= 0 ? page - 1 : 0,
+            offset : page * limit < 0 ? 0 : page * limit,
+            limit  : limit <= 0 || limit > 40 ? 40 : limit,
+            page   : page,
+            current: page,
+            next   : page + 1,
+            prev   : page - 1 >= 0 ? page - 1 : 0,
         };
     },
 );

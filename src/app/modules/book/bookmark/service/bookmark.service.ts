@@ -1,3 +1,4 @@
+import { Pagination } from '@decorators/pagination.decorator';
 import { ErrorMessage } from '@errors/error.message';
 import { ErrorStatus } from '@errors/error.status';
 import { checkResult, CheckType } from '@helpers/check.result';
@@ -16,6 +17,23 @@ export class BookmarkService {
         private readonly googleBooksService: GoogleBooksService,
         private readonly redisCacheService: RedisCacheService,
     ) {
+    }
+
+    public async getBookmarksOfUser(user: User, pagination: Pagination) {
+        const query = {
+            userId: user.id
+        };
+        const totalItemCount = await this.updatePagination(pagination, query);
+        const results = await this.bookmarkRepository.find({
+            where: query,
+            skip : pagination.offset,
+            take : pagination.limit
+        });
+        pagination.itemCount = results.length;
+        return {
+            totalItemCount: totalItemCount,
+            items         : results,
+        };
     }
 
     public async addBookmarkToUser(user: User, volumeId: string): Promise<Bookmark> {
@@ -49,4 +67,18 @@ export class BookmarkService {
         await this.bookmarkRepository.delete(targetBookmark.id);
         return targetBookmark;
     }
+
+    private async updatePagination(
+        pagination: Pagination,
+        query?: any,
+    ): Promise<number> {
+        pagination.totalItemCount = await this.bookmarkRepository.countBy(query);
+        pagination.offset = pagination?.offset ? pagination.offset : 0;
+        pagination.count = pagination.totalItemCount == pagination.limit ? 0 : Math.abs(Math.floor(pagination.totalItemCount / pagination.limit - 1));
+        console.log('pagination-> ', pagination);
+        pagination.hasNext = pagination.count > pagination.current;
+        pagination.hasPrev = pagination.current > 0;
+        return pagination.totalItemCount;
+    }
+
 }

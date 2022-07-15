@@ -1,9 +1,10 @@
 import { CurrentUser } from '@decorators/current-user.decorator';
+import { Paginate, Pagination } from '@decorators/pagination.decorator';
 import { JWTGuard } from '@guards/jwt.guard';
 import { ResponseHelper } from '@helpers/response.helper';
 import { BookmarkService } from '@modules/book/bookmark/service/bookmark.service';
 import { User } from '@modules/user/entities/user.entity';
-import { Controller, Get, Req, Res, Param, Post, UseGuards, Delete } from '@nestjs/common';
+import { Controller, Req, Res, Param, Post, UseGuards, Delete, Get } from '@nestjs/common';
 
 @Controller('bookmark')
 export class BookmarkController {
@@ -12,6 +13,28 @@ export class BookmarkController {
     constructor(
         private readonly bookmarkService: BookmarkService
     ) {
+    }
+
+    @Get()
+    @UseGuards(JWTGuard)
+    async getBookmarksOfUser(@Req() request,
+        @Res() response,
+        @CurrentUser() currentUser: User,
+        @Paginate() pagination: Pagination) {
+        const paginatedResult = await this.bookmarkService.getBookmarksOfUser(currentUser, pagination);
+        response.json(ResponseHelper.set(
+                paginatedResult,
+                {
+                    controller: this.controller,
+                    pagination: {
+                        total: paginatedResult.totalItemCount,
+                        ...pagination,
+                    },
+                    params    : request.params,
+                    headers   : request.headers
+                }
+            )
+        );
     }
 
     @Post(':volumeId')
