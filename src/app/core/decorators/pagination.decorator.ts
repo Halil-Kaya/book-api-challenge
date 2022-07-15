@@ -19,6 +19,11 @@ export interface Pagination {
     prev?: number; // Önceki sayfa numarası.
 }
 
+/*
+* her controller'in icinde pagination bilgisini almaktansa bu islemi kolaylastirmak icin bunu deverator olarak ekliyorum
+* boylece kodlar daha temiz oluyor
+* daha fazla detay icin :-> https://docs.nestjs.com/custom-decorators
+* */
 export const Paginate = createParamDecorator(
     (data: string, ctx: ExecutionContext): Pagination => {
         const request = ctx.switchToHttp().getRequest();

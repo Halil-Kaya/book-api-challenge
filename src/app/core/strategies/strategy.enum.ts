@@ -1,4 +1,4 @@
 export enum StrategyType {
-  JWT = "jwt",
-  JWT_REFRESH = 'jwt-refresh',
+    JWT         = 'jwt',
+    JWT_REFRESH = 'jwt-refresh',
 }

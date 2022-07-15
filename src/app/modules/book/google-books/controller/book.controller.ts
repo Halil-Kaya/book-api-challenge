@@ -13,6 +13,9 @@ export class BookController {
     ) {
     }
 
+    /*
+    * Atilan keywords e gore Google books Api'den kitaplari pagination bir sekilde getirir
+    * */
     @Get()
     async getBooks(@Req() request,
         @Res() response,
@@ -30,11 +33,14 @@ export class BookController {
         );
     }
 
-    @Get(':bookId')
+    /*
+    * parametre olarak gonderilen volumeId ye gore google books api den kitabi getirir
+    * */
+    @Get(':volumeId')
     async getBook(@Req() request,
         @Res() response,
-        @Param('bookId') bookId: string) {
-        const book = await this.googleBooksService.getBook(bookId);
+        @Param('volumeId') volumeId: string) {
+        const book = await this.googleBooksService.getBook(volumeId);
         response.json(ResponseHelper.set(
                 book,
                 {

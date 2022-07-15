@@ -16,6 +16,12 @@ import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from '@source/app/core/filters/all-exceptions.filter';
 import { LoggerMiddleware } from '@middlewares/logger.middleware';
 
+/*
+* calistirma seklime gore config dosyasini seciyor
+* eger 'start:dev' ile calisirsa 'developmentConfiguration'
+* eger 'start:prod' ile calisirsa 'productionConfiguration'
+* config dosyasini secer
+* */
 const ENV = process.env.MODE;
 const configurationFile = (() => {
     switch(ENV) {
@@ -67,7 +73,7 @@ const configurationFile = (() => {
 export class AppModule implements NestModule {
     configure(consumer: MiddlewareConsumer): void {
         consumer
-            .apply(LoggerMiddleware)
+            .apply(LoggerMiddleware)//logger middleware imi ekledigim yer
             .forRoutes('*');
     }
 }

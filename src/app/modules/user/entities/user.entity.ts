@@ -12,6 +12,7 @@ export class User {
     @Column()
     password: string;
 
+    //kisiye verdigim refreshToken ini hashleyip burda tutuyorum
     @Column({
         default: ''
     })
@@ -23,8 +24,8 @@ export class User {
     })
     isLoggin: boolean;
 
-    @OneToMany(() => Bookmark,bookmark => bookmark.user)
-    bookmarks? : Bookmark[]
+    @OneToMany(() => Bookmark, bookmark => bookmark.user)
+    bookmarks?: Bookmark[];
 }
 
 export interface SanitizedUser {

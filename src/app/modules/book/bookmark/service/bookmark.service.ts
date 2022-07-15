@@ -37,6 +37,7 @@ export class BookmarkService {
     }
 
     public async addBookmarkToUser(user: User, volumeId: string): Promise<Bookmark> {
+        //boyle bir bookmark zaten var mi diye kontrol ediyorum eger varsa var olani donuyorum
         const existBookmark = await this.bookmarkRepository.findOneBy({
             volumeId: volumeId,
             userId  : user.id
@@ -44,11 +45,14 @@ export class BookmarkService {
         if (existBookmark) {
             return existBookmark;
         }
+        //api'ye istek atmadan once cache de var mi diye kontrol ediyorum
         const bookmarkFromRedis = await this.redisCacheService.get<Bookmark>(volumeId);
+        //eger cache'de var ise ordan cekip yeni bir bookmark olusturuyorum olusturulan bookmarki donup islemi bitiriyorum
         if (bookmarkFromRedis) {
             bookmarkFromRedis.userId = user.id;
             return await this.bookmarkRepository.save(bookmarkFromRedis);
         }
+        //eger cache de yoksa api'ye istek atip gelen sonucla yeni bir bookmark olusturuyorum
         const book = await this.googleBooksService.getBook(volumeId);
         const bookmarkObject = this.googleBooksService.convertBookResponseToBookMarkObject(book);
         bookmarkObject.userId = user.id;
@@ -68,10 +72,10 @@ export class BookmarkService {
         return targetBookmark;
     }
 
+    //pagination objemi query'e gore guncelliyorum. Bu pagination yapisi frontend kisminda sayfalama icin gereken bilgileri vermektedir
     private async updatePagination(
         pagination: Pagination,
-        query?: any,
-    ): Promise<number> {
+        query?: any): Promise<number> {
         pagination.totalItemCount = await this.bookmarkRepository.countBy(query);
         pagination.offset = pagination?.offset ? pagination.offset : 0;
         pagination.count = pagination.totalItemCount == pagination.limit ? 0 : Math.abs(Math.floor(pagination.totalItemCount / pagination.limit - 1));

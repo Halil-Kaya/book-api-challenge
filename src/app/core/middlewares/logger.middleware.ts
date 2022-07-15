@@ -1,6 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { Injectable, NestMiddleware, Logger } from '@nestjs/common';
 
+/*
+* atilan istekleri gormemi saglayan middleware
+* */
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
     private logger = new Logger('HTTP');

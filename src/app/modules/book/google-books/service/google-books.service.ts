@@ -28,8 +28,13 @@ export class GoogleBooksService {
         private readonly configService: ConfigService<Environment>
     ) {}
 
+    /*sorgulanan kitaplari formatlayip gecici bir sureligine rediste sakliyorum
+    * boylece kullanici kitabi bookmark ina eklemek istedigimde kitabi getirmek icin istek atmaktansa
+    * redisten hizli bir sekilde kitabi getimis olucam
+    * */
     async getBooks(keywords: string, pagination: Pagination): Promise<BooksResponseDto> {
         try {
+            //kitaplar icin istek atiyorum
             const response = await this.httpService.get(this.configService.get('GOOGLE_BOOKS_API').BASE_URL, {
                 params: {
                     q         : keywords,
@@ -38,6 +43,8 @@ export class GoogleBooksService {
                 }
             }).toPromise();
             const booksResponseDto = response.data as BooksResponseDto;
+            //bu redise ekleme isleminini kullanicinin beklemesine gerek yok bu yuzden bunu event olarak atiyorum
+            //boylece kullanici bu islemi beklemeyecek
             this.eventEmitter.emit(EventEnums.SAVE_TO_REDIS_EVENT, booksResponseDto.items);
             return booksResponseDto;
         } catch(err) {
@@ -46,10 +53,13 @@ export class GoogleBooksService {
         }
     }
 
-    async getBook(bookId: string) {
+    async getBook(volumeId: string) {
         try {
-            const response = await this.httpService.get(this.configService.get('GOOGLE_BOOKS_API').BASE_URL + '/' + bookId).toPromise();
+            //kitap icin istek atiyorum
+            const response = await this.httpService.get(this.configService.get('GOOGLE_BOOKS_API').BASE_URL + '/' + volumeId).toPromise();
             const bookResponseDto = response.data as BookResponseDto;
+            //bu redise ekleme isleminini kullanicinin beklemesine gerek yok bu yuzden bunu event olarak atiyorum
+            //boylece kullanici bu islemi beklemeyecek
             this.eventEmitter.emit(EventEnums.SAVE_TO_REDIS_EVENT, [ bookResponseDto ]);
             return bookResponseDto;
         } catch(err) {
@@ -58,6 +68,11 @@ export class GoogleBooksService {
         }
     }
 
+    //email gonderme,bildirim gonderme,fatura olusturup db ye kaydetme,kullanicinin logunu tutma gibi
+    //islemlerde kullanicinin bunlari beklemesine gerek yok bunlar arka planda calisabilir boylece kullanicnin istegi daha hizli gerceklesir
+    //burda bunu redis icin kullaniyorum burasi bir event olarak calistiginda arka planda google books api'sinden gelen booklari redise kaydedicek
+    //event olarak calistigi icin istek atan kullanici bu islem icin beklemeyecek
+    //data fazla detay icin :-> https://docs.nestjs.com/techniques/events
     @OnEvent(EventEnums.SAVE_TO_REDIS_EVENT, { async: true })
     private async setToCacheBooks(bookResponseDtos: BookResponseDto[]): Promise<void> {
         try {
@@ -70,10 +85,12 @@ export class GoogleBooksService {
         }
     }
 
+    //redise yazma islemini yaptigim yer
     private async setToCacheBook(bookmark: Bookmark) {
         await this.redisCacheService.set(bookmark.volumeId, bookmark, RedisStorageTimeEnum.STORE_30_MINUTE);
     }
 
+    //google books api'den gelen datayi benim bookmark modelime gore formatliyorum
     public convertBookResponseToBookMarkObject(bookResponseDto: BookResponseDto): Bookmark {
         return this.bookmarkRepository.create({
             authors            : bookResponseDto.volumeInfo?.authors?.join('#'),

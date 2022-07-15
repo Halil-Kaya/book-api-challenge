@@ -38,8 +38,13 @@ export class AuthService {
         return tokens;
     }
 
+    /*
+    * kullanicinin isteklerinde 'isLoggin' degiskeni eger false ise kisinin o istegi kullanmasina izin vermiyorum
+    * boylece kisinin cikis yapmasi icin accessToken'inin suresinin bitmesini beklemek zorunda kalmiyorum
+    * */
     public async logout(user: User): Promise<void> {
         user.isLoggin = false;
+        //refreshToken'ini kullanarak tekrardan login olmasin diye su anki tokenini siliyorum
         user.currentHashedRefreshToken = '';
         await this.userService.save(user);
     }
@@ -53,7 +58,7 @@ export class AuthService {
             ErrorMessage.UNEXPECTED);
     }
 
-    public async findUserFromSanitizedUser(sanitizedUser: SanitizedUser) {
+    public async findUserFromSanitizedUser(sanitizedUser: SanitizedUser): Promise<User> {
         return this.userService.findById(sanitizedUser.id);
     }
 
@@ -70,9 +75,12 @@ export class AuthService {
     }
 
     //~~~~~Refresh token section start
-    public async getUserIfRefreshTokenMatches(refreshToken: string, userId: number) {
+    //sadece en son verdigim refreshToken ile yeniden tokenlar alabilir
+    //en son verdigim refreshToken i bu yuzden User modelinde sakliyorum
+    public async getUserIfRefreshTokenMatches(refreshToken: string, userId: number): Promise<User> {
         const encryptedRefreshToken = shajs('sha256').update(refreshToken).digest('hex');
         const user = await this.userService.findById(userId);
+        //gonderdigi refreshToken ile en son verdigim refreshToken uyusuyor mu
         const isRefreshTokenMatching = await bcrypt.compare(
             encryptedRefreshToken,
             user.currentHashedRefreshToken,
@@ -80,9 +88,10 @@ export class AuthService {
         if (isRefreshTokenMatching) {
             return user;
         }
+        return null;
     }
 
-    public async setCurrentRefreshTokenForUser(userId: number, refreshToken: string) {
+    public async setCurrentRefreshTokenForUser(userId: number, refreshToken: string): Promise<void> {
         const currentHashedRefreshToken = await AuthService.hashRefreshToken(refreshToken);
         await this.userService.setRefreshTokenOfUser(userId, currentHashedRefreshToken);
     }
@@ -91,5 +100,6 @@ export class AuthService {
         const encryptedRefreshToken = shajs('sha256').update(refreshToken).digest('hex');
         return await bcrypt.hash(encryptedRefreshToken, 10);
     }
+
     //~~~~~Refresh token section end
 }

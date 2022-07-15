@@ -15,6 +15,9 @@ export class BookmarkController {
     ) {
     }
 
+    /*
+    * Kullanicinin bookmark'larini sayfali bir sekilde getirir
+    * */
     @Get()
     @UseGuards(JWTGuard)
     async getBookmarksOfUser(@Req() request,
@@ -37,6 +40,10 @@ export class BookmarkController {
         );
     }
 
+    /*
+    * parametre olarak gonderilen volumeId ye gore book'u bulup bunu kullaniciya ekler
+    * (bu ekleme isleminde once cache bakar eger orda yoksa api'ye istek atar)
+    * */
     @Post(':volumeId')
     @UseGuards(JWTGuard)
     async addBookmarkToUser(@Req() request,
@@ -55,6 +62,9 @@ export class BookmarkController {
         );
     }
 
+    /*
+    * parametre olarak gonderilen volumeId ye gore kullanicinin bookmark listesinden siler
+    * */
     @Delete(':volumeId')
     @UseGuards(JWTGuard)
     async removeBookmarkFromUser(@Req() request,

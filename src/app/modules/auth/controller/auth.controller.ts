@@ -1,5 +1,6 @@
 import { CurrentUser } from '@decorators/current-user.decorator';
 import { JWTGuard } from '@guards/jwt.guard';
+import { SignResponse } from '@helpers/jwt.token.helper';
 import { ResponseHelper, DefaultResponse } from '@helpers/response.helper';
 import CreateUserDto from '@modules/auth/dto/create-user.dto';
 import LoginDto from '@modules/auth/dto/login.dto';
@@ -18,6 +19,9 @@ export class AuthController {
     ) {
     }
 
+    /*
+    * Kullanicinin kendisini doner
+    * */
     @Get('me')
     @UseGuards(JWTGuard)
     async getMe(
@@ -34,7 +38,6 @@ export class AuthController {
             )
         );
     }
-
 
     @Post('create')
     async create(
@@ -53,12 +56,19 @@ export class AuthController {
         );
     }
 
+    /*
+    * email ve password bilgisi uyusuyorsa kisiye accessToken ve refreshToken döner
+    * refreshToken'in yasam suresi accessToken'a kiyasla daha uzun. Kisi ona verilen refreshToken'ini
+    * kullanarak yeni accessToken ve refreshToken alabilir
+    * Boylece eger kisi uygulamayi aktif olarak kullaniyorsa accessToken'in suresi bittiginde tekrar email ve password ile
+    * giris yapmak zorunda kalmiyacak
+    * */
     @Post('login')
     async login(
         @Req() request,
         @Res() response,
         @Body() loginDto: LoginDto) {
-        const tokens = await this.authService.login(loginDto);
+        const tokens: SignResponse = await this.authService.login(loginDto);
         response.json(ResponseHelper.set(
                 {
                     tokens: tokens
@@ -72,6 +82,11 @@ export class AuthController {
         );
     }
 
+    /*
+    * eger kisinin accessToken'in suresi bittiyse login'de verdigim refreshToken'ini kullanarak yeni
+    * accessToken ve refreshToken alabilir
+    * Tek yapmasi gereken refreshToken'i ile bu endpointe istek atmasi
+    * */
     @Post('refresh')
     @UseGuards(JwtRefreshGuard)
     async refresh(@Req() request,
@@ -90,7 +105,9 @@ export class AuthController {
             }));
     }
 
-
+    /*
+    * Kisiyi sistemden atar
+    * */
     @Post('logout')
     @UseGuards(JWTGuard)
     async logout(
