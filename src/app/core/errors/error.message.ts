@@ -9,5 +9,6 @@ export enum ErrorMessage {
     YOU_MUST_LOGIN                         = 'YOU_MUST_LOGIN',
     THIS_EMAIL_HAS_ALREADY_EXIST           = 'THIS_EMAIL_HAS_ALREADY_EXIST',
     KEYWORDS_REQUIRED                      = 'KEYWORDS_REQUIRED',
-    INVALID_REQUEST                        = 'INVALID_REQUEST'
+    INVALID_REQUEST                        = 'INVALID_REQUEST',
+    BOOKMARK_NOT_FOUND                     = 'BOOKMARK_NOT_FOUND'
 }
