@@ -8,5 +8,6 @@ export enum ErrorMessage {
     JWT_USER_GUARD_CAN_NOT_BE_INSTANTIATED = 'JWT_USER_GUARD_CAN_NOT_BE_INSTANTIATED',
     YOU_MUST_LOGIN                         = 'YOU_MUST_LOGIN',
     THIS_EMAIL_HAS_ALREADY_EXIST           = 'THIS_EMAIL_HAS_ALREADY_EXIST',
-    KEYWORDS_REQUIRED                      = 'KEYWORDS_REQUIRED'
+    KEYWORDS_REQUIRED                      = 'KEYWORDS_REQUIRED',
+    INVALID_REQUEST                        = 'INVALID_REQUEST'
 }

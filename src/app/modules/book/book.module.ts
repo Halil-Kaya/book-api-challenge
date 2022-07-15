@@ -1,3 +1,4 @@
+import { BookmarkController } from '@modules/book/bookmark/controller/bookmark.controller';
 import { Bookmark } from '@modules/book/bookmark/entities/bookmark.entity';
 import { BookmarkService } from '@modules/book/bookmark/service/bookmark.service';
 import { BookController } from '@modules/book/google-books/controller/book.controller';
@@ -13,7 +14,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         HttpModule,
         RedisCacheModule
     ],
-    controllers: [ BookController ],
+    controllers: [ BookController, BookmarkController ],
     providers  : [ BookmarkService, GoogleBooksService ],
     exports    : [ BookmarkService, GoogleBooksService ]
 })

@@ -6,46 +6,46 @@ export class Bookmark {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({ type: 'text' })
     volumeId: string;
 
-    @Column()
+    @Column({ type: 'text', nullable: true })
     title: string;
 
-    @Column()
+    @Column({ type: 'text', nullable: true })
     subtitle: string;
 
-    @Column()
+    @Column({ type: 'text', nullable: true })
     publisher: string;
 
-    @Column()
+    @Column({ type: 'text', nullable: true })
     authors: string;
 
-    @Column()
+    @Column({ type: 'text', nullable: true })
     categories: string;
 
-    @Column()
+    @Column({ type: 'text', nullable: true })
     previewLink: string;
 
-    @Column()
+    @Column({ type: 'text', nullable: true })
     infoLink: string;
 
-    @Column()
+    @Column({ type: 'text', nullable: true })
     smallThumbnail: string;
 
-    @Column()
+    @Column({ type: 'text', nullable: true })
     thumbnail: string;
 
-    @Column()
+    @Column({ type: 'text', nullable: true })
     canonicalVolumeLink: string;
 
-    @Column()
+    @Column({ type: 'text', nullable: true })
     publishedDate: string;
 
-    @Column()
+    @Column({ type: 'text', nullable: true })
     language: string;
 
-    @Column()
+    @Column({ type: 'number' })
     userId: number;
 
     @ManyToOne(() => User, user => user.bookmarks)

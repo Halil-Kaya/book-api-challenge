@@ -42,7 +42,7 @@ export class GoogleBooksService {
             return booksResponseDto;
         } catch(err) {
             this.logger.error(err, 'getBooks');
-            throw new BaseError(ErrorStatus.BAD_REQUEST, ErrorMessage.UNEXPECTED);
+            throw new BaseError(ErrorStatus.BAD_REQUEST, ErrorMessage.INVALID_REQUEST);
         }
     }
 
@@ -54,7 +54,7 @@ export class GoogleBooksService {
             return bookResponseDto;
         } catch(err) {
             this.logger.error(err, 'getBook');
-            throw new BaseError(ErrorStatus.BAD_REQUEST, ErrorMessage.UNEXPECTED);
+            throw new BaseError(ErrorStatus.BAD_REQUEST, ErrorMessage.INVALID_REQUEST);
         }
     }
 
@@ -74,15 +74,15 @@ export class GoogleBooksService {
         await this.redisCacheService.set(bookmark.volumeId, bookmark, RedisStorageTimeEnum.STORE_30_MINUTE);
     }
 
-    private convertBookResponseToBookMarkObject(bookResponseDto: BookResponseDto): Bookmark {
+    public convertBookResponseToBookMarkObject(bookResponseDto: BookResponseDto): Bookmark {
         return this.bookmarkRepository.create({
-            authors            : bookResponseDto.volumeInfo?.authors?.join('&'),
+            authors            : bookResponseDto.volumeInfo?.authors?.join('#'),
             language           : bookResponseDto.volumeInfo?.language,
             volumeId           : bookResponseDto.id,
             title              : bookResponseDto.volumeInfo?.title,
             subtitle           : bookResponseDto.volumeInfo?.subtitle,
             publisher          : bookResponseDto.volumeInfo?.publisher,
-            categories         : bookResponseDto.volumeInfo?.categories?.join('&'),
+            categories         : bookResponseDto.volumeInfo?.categories?.join('#'),
             previewLink        : bookResponseDto.volumeInfo?.previewLink,
             infoLink           : bookResponseDto.volumeInfo?.infoLink,
             smallThumbnail     : bookResponseDto.volumeInfo?.imageLinks?.smallThumbnail,
