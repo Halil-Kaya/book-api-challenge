@@ -1,74 +1,85 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Book api Challange
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+> Hey merhaba ✋ bir challange olarak yaptigim bu projede amaç Google Books api'den gelen kitapları listelemek, kendi
+> bookmark listenize eklemek,listelemek ve silmek
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+# Postman Linki
 
-## Description
+> https://documenter.getpostman.com/view/10504693/UzQvrjKe
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+#### Bağımlılıklar
 
-## Installation
+- **NodeJs** (v16.13.2)
+- **NPM** (v8.1.2)
+- **Typescript** (4.1.2)
+- **NestJS** (v8.1.1)
+- **MySql** (v8)
+- **Redis**
+
+### Config Dosyaları
+
+Geliştirme ve ürün ortamında kullanılan önemli dosyalar hakkında.
+
+| **Dosya**               | **Açıklama**                                                                         |
+|:------------------------|:-------------------------------------------------------------------------------------|
+| `development.config.ts` | Geliştirme modunda kullanılacak database,redis vb. gibi ortam değişkenlerini içerir. |
+| `production.config.ts`  | docker'ın içinde kullanılacak database,redis vb. ortam değişkenlerini içerir.                          |
+
+Config dosyaları /src/config dizininde bulunmaktadır
+
+#### Çalıştırma Modları
+
+Projeyi ayağa kaldırma şekli hakkında.\
+
+| **Komut** | **Açıklama**                                                          |
+|:----------|:----------------------------------------------------------------------|
+| `start:dev` | DEVELOPMENT modunda kalkar localdeki db ve redise bağlanır.           |
+| `start:prod` | PRODUCTION modunda kalkar docker'ın içindeki db ve redise ve bağlanır |
+
+### Notlar
+
+Projeyi ayağa kaldırmanız için MySql ve Redis teknelojilerini indirmeniz gerekmektedir eğer bunlarla uğraşmak
+istemiyorsanız
+docker teknelojisi ile projeyi ayağa kaldırabilirsiniz.
+
+## Development ortamında çalıştırmak
+
+### MySql
+
+| MYSQL_DATABASE| MYSQL_USERNAME | MYSQL_PASSWORD | MYSQL_HOST|
+|----------------------|---------------|-------------------|---------------------|
+| book_api | test    | 123456        | localhost         |
+
+### Redis
+
+| REDIS_URL| REDIS_PORT |REDIS_HOST  |
+|----------------------|------------|-------------|
+| redis://localhost:6379 | 6379       | localhost |
+
+### Kurulum
 
 ```bash
 $ npm install
 ```
 
-## Running the app
+### Projeyi ayağa kaldırma
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
+#http://localhost:3031
 $ npm run start:dev
-
-# production mode
-$ npm run start:prod
 ```
 
-## Test
+## Docker ortamında çalıştırmak
+
+### Projeyi ayağa kaldırma
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+#http://localhost:3031
+$ docker-compose up
 ```
 
-## Support
+### Projeyi durdurma
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
-# book-api
+```bash
+$ docker-compose down
+```
