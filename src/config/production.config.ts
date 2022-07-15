@@ -3,7 +3,7 @@ import { AppMode } from '@source/config/app.mode';
 export default () => ({
     MODE                     : AppMode.PRODUCTION,
     URL_ROOT                 : '/api',
-    PORT                     : process.env.PORT,
+    PORT                     : 3032,
     JWT_SECRET               : 'ACTouSkiAbuSianUmELveydRIcKSMorOphiciontLopigAnulS',
     JWT_EXPIRES              : '30d',
     JWT_ALGORITHM            : 'HS256',

@@ -16,8 +16,8 @@ export default () => ({
     MYSQL                    : {
         TYPE       : 'mysql',
         HOST       : 'localhost',
-        USERNAME   : 'root',
-        PASSWORD   : 'mypass123',
+        USERNAME   : 'test',
+        PASSWORD   : '123456',
         DATABASE   : 'book_api',
         SYNCHRONIZE: true
     },

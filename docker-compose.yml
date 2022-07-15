@@ -12,18 +12,22 @@ services:
     environment:
       - REDIS_URL=redis://redis_service
       - MYSQL_HOST=mysql_service
-      - MYSQL_USERNAME=root,
-      - MYSQL_PASSWORD=root,
-      - MYSQL_DATABASE=book_api,
+      - MYSQL_USERNAME=test
+      - MYSQL_PASSWORD=123456
+      - MYSQL_DATABASE=book_api
       - MYSQL_SYNCHRONIZE=true
     networks:
       - books_api_net
 
   mysql_service:
-    image: mysql:8.0.1
+    image: mysql:8
     ports:
       - "3306:3306"
+    volumes:
+      - ./data/mysql:/var/lib/mysql
     environment:
+      - MYSQL_USER=test
+      - MYSQL_PASSWORD=123456
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=book_api
     networks:
@@ -35,10 +39,6 @@ services:
       - mysql_service:db
     ports:
       - 8081:80
-    environment:
-      MYSQL_USERNAME: root
-      MYSQL_ROOT_PASSWORD: root
-      PMA_HOST: db
     networks:
       - books_api_net
 
@@ -46,6 +46,8 @@ services:
     image: redis
     ports:
       - "6379:6379"
+    volumes:
+      - ./data/redis:/data
     networks:
       - books_api_net
 
