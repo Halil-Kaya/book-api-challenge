@@ -34,7 +34,7 @@ export class JWTStrategy extends PassportStrategy(
                 return done(
                     new BaseError(
                         ErrorStatus.UNAUTHORIZED,
-                        ErrorMessage.INVALID_CREDENTIALS
+                        ErrorMessage.UNAUTHORIZED
                     ),
                     null
                 );
